@@ -1,0 +1,12 @@
+node_modules/
+.output/
+.vite/
+.DS_Store
+*.log
+coverage/
+.env
+.env.local
+.env.*.local
+tsconfig.tsbuildinfo
+playwright-report/
+test-results/
