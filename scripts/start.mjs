@@ -22,8 +22,7 @@
  * installing a server route that matches /v1/$ works, but the
  * round-trip through React Router's matcher adds latency for a
  * request that is a pure pass-through. A Node-level middleware is
- * the cleaner fit. (The route file at `src/routes/v1/$.tsx` is
- * retained as a reference.)
+ * the cleaner fit.
  */
 import { serve } from "srvx/node";
 import serverEntry from "../dist/server/server.js";
