@@ -28,9 +28,10 @@ The Vite dev server proxies `/v1/*` to the backend so the browser sees one origi
 
 ```sh
 npm run build
-# Produces .output/server/index.mjs
+# Produces dist/client (static) + dist/server/server.js (Web Fetch handler)
 npm start
-# Listens on PORT (default 4173)
+# scripts/start.mjs wraps the Web Fetch handler in a Node http listener
+# via srvx, binding to PORT (default 4173).
 ```
 
 ## Docker
@@ -47,10 +48,9 @@ The compose file in this repo expects a backend service named `backend` on the s
 
 In **dev**, the Vite dev server (`vite.config.ts`) proxies `/v1/*` to `VITE_API_TARGET` (default `http://localhost:4100`).
 
-In **prod**, the TanStack Start runtime does NOT have the Vite proxy. Two options:
+In **prod**, a Node http middleware in `scripts/start.mjs` (intercepts /v1/* before TanStack Start) forwards the same paths to `BACKEND_URL` (set in the deploy env). The middleware wraps the Web Fetch handler from `dist/server/server.js` and runs `srvx` to bind it to PORT. The browser sees a single origin in both dev and prod.
 
-1. **Reverse proxy in front** (recommended): nginx or caddy terminates TLS and forwards `/v1/*` to the backend service, `/` to the web container. The `docker-compose.yml` in this repo is set up for this case.
-2. **TanStack Start server route** at `src/routes/api/$.ts` is a follow-up. The current implementation is intentionally dev-only because the catch-all TanStack Start server API in 1.168.x is not yet stable enough for a clean implementation.
+An external reverse proxy (nginx, caddy) is still recommended for TLS termination and to expose a single host for the two services — the docker-compose in this repo assumes an external proxy.
 
 ## Structure
 
@@ -77,6 +77,8 @@ src/
 │   └── integrations.tsx            # the headline page
 └── styles/
     └── globals.css                 # Tailwind v4 entry
+scripts/
+└── start.mjs                       # Node http listener + /v1/* prod proxy
 ```
 
 ## Sync with backend
@@ -87,12 +89,18 @@ The drift guard is the design: rather than silently rendering with missing data,
 
 ## CI
 
-A workflow is checked into `.github/workflows/ci.yml` (lint, typecheck, vitest, docker build). It's NOT in the initial push because the GitHub token used to seed the repo didn't have the `workflow` scope. Add the file manually once the token is rotated with the right scopes:
+GitHub Actions is **not yet** wired in. The CI workflow file
+(`.github/workflows/ci.yml`) is checked in to the working tree
+locally but is currently gitignored (line 16 of `.gitignore`)
+because the GitHub token used to seed the repo lacked the
+`workflow` scope. Once the token is rotated with `workflow`
+included, run:
 
 ```sh
-mkdir -p .github/workflows
-# (file is in this repo at .github/workflows/ci.yml)
-git add .github/workflows/ci.yml
+git add -f .github/workflows/ci.yml
 git commit -m "ci: add GitHub Actions workflow"
 git push
 ```
+
+The workflow runs lint, typecheck, vitest, and a docker build on
+every PR.

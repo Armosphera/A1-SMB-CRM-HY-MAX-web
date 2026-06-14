@@ -8,11 +8,13 @@
 # your deploy environment. The default points at the
 # `a1-smb-crm-hy-max-backend` service in the same compose project.
 #
-# Vite's built-in proxy is NOT available in the TanStack Start
-# runtime; the backend proxy here is implemented as a TanStack
-# server route at src/routes/api/$.ts. The compose-level reverse
-# proxy (nginx, caddy) can be added in front if you need TLS
-# termination and a single host for the two services.
+# The /v1/* proxy is implemented as a Node http middleware in
+# `scripts/start.mjs` (intercepts /v1/* BEFORE TanStack Start, and
+# forwards to BACKEND_URL). This matches dev, where Vite's
+# `server.proxy` does the same job. The Node-level middleware
+# is the cleaner fit than a TanStack Start server route because
+# the default stream handler renders React for non-handler paths;
+# a /v1/* pass-through shouldn't pay that round-trip cost.
 
 services:
   web:
@@ -28,7 +30,7 @@ services:
       - NODE_ENV=production
       - PORT=4173
       # Override at the deploy level. This is the backend the
-      # server-side API route forwards /v1/* to.
+      # server-side /v1/* route forwards to.
       - BACKEND_URL=http://backend:4100
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:4173/ >/dev/null 2>&1 || exit 1"]

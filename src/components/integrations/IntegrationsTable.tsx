@@ -50,7 +50,7 @@ export function IntegrationsTable({
         </thead>
         <tbody className="divide-y divide-neutral-100 dark:divide-neutral-900">
           {rows.map((row) => {
-            const outbound = outboundStatuses[row.id] as { enabled?: boolean } | undefined;
+            const outbound = outboundStatuses[row.id];
             const triggers = triggerConfigs[row.id] ?? [];
             const connectAction = oauthConnectActions[row.type];
             return (
@@ -109,21 +109,20 @@ export function IntegrationsTable({
                       </Button>
                     </a>
                   ) : (
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => {
-                        // TODO: navigate to per-resource editor when
-                        // /integrations/$id route is added. For the
-                        // v1 cut, an apiKey-style provider can't
-                        // "Connect" — operator opens the route
-                        // and the row's config editor comes next.
-                        void row.id;
-                      }}
+                    // The per-resource editor route (`/integrations/$id`)
+                    // is a v2 cut. Until it ships, an apiKey-style
+                    // provider shows a "Coming soon" badge instead of
+                    // a button that does nothing on click.
+                    <span
+                      className="inline-flex items-center gap-1 rounded-md bg-neutral-100 px-2 py-1 text-xs text-neutral-500 dark:bg-neutral-900 dark:text-neutral-400"
+                      title="Per-resource editor is coming in a follow-up."
                     >
                       <Settings2 className="h-3.5 w-3.5" />
                       Configure
-                    </Button>
+                      <span className="ml-1 rounded bg-neutral-200 px-1 text-[10px] uppercase tracking-wide dark:bg-neutral-800">
+                        Soon
+                      </span>
+                    </span>
                   )}
                 </td>
               </tr>

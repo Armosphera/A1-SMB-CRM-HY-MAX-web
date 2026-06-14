@@ -64,7 +64,13 @@ export type PageOfIntegration = z.infer<typeof PageOfIntegration>;
 
 const AdminBootstrap = z.object({
   integrations: PageOfIntegration,
-  outboundStatuses: z.record(z.string(), z.unknown()),
+  outboundStatuses: z.record(
+    z.string(),
+    z.object({
+      enabled: z.boolean(),
+      blockedLast24h: z.number().int().min(0).optional(),
+    }).passthrough(),
+  ),
   triggerConfigs: z.record(z.string(), z.array(z.unknown())),
   vaultAudit: z.object({
     tenantId: z.string(),
@@ -107,7 +113,6 @@ const ErrorEnvelope = z.object({
 export async function fetchAdminBootstrap(): Promise<AdminBootstrap> {
   const res = await fetch("/v1/integrations/_admin-bootstrap", {
     method: "GET",
-    credentials: "include",
     headers: {
       ...(getToken() ? { authorization: `Bearer ${getToken()}` } : {}),
       accept: "application/json",

@@ -16,14 +16,17 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { fetchAdminBootstrap, setToken, clearToken } from "./integrations";
 
+// Sample provider ids use neutral names (`acme-email`, etc.) — the
+// repo's licensing cleanup removed all third-party vendor names
+// from code, tests, and fixtures.
 const validEnvelope = {
   integrations: {
     items: [
       {
         id: "1443868b-9a18-4f78-ad17-e20648f1f76e",
-        type: "apollo",
+        type: "acme-email",
         status: "connected",
-        config: { apollo: { apiKey: "k" } },
+        config: { "acme-email": { apiKey: "k" } },
         hasCredentials: false,
         lastSyncAt: null,
         lastError: null,
@@ -36,7 +39,9 @@ const validEnvelope = {
     page: 1,
     pageSize: 25,
   },
-  outboundStatuses: { "1443868b-9a18-4f78-ad17-e20648f1f76e": { enabled: true } },
+  outboundStatuses: {
+    "1443868b-9a18-4f78-ad17-e20648f1f76e": { enabled: true, blockedLast24h: 0 },
+  },
   triggerConfigs: { "1443868b-9a18-4f78-ad17-e20648f1f76e": [] },
   vaultAudit: {
     tenantId: "11111111-1111-1111-1111-111111111111",
@@ -46,7 +51,9 @@ const validEnvelope = {
     summary: "All secrets are vault-encrypted.",
     note: "Plaintext rows are accepted for backward compatibility with integrations written before the vault landed.",
   },
-  oauthConnectActions: { apollo: { startUrl: "/v1/integrations/oauth/start?provider=apollo" } },
+  oauthConnectActions: {
+    "acme-email": { startUrl: "/v1/integrations/oauth/start?provider=acme-email" },
+  },
   meta: {
     tenantId: "11111111-1111-1111-1111-111111111111",
     generatedAt: "2026-01-01T00:00:00.000Z",
@@ -73,7 +80,7 @@ describe("fetchAdminBootstrap", () => {
     );
     const out = await fetchAdminBootstrap();
     expect(out.integrations.items).toHaveLength(1);
-    expect(out.integrations.items[0].type).toBe("apollo");
+    expect(out.integrations.items[0].type).toBe("acme-email");
     expect(out.meta.totalIntegrations).toBe(1);
   });
 
