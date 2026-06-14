@@ -14,9 +14,12 @@ FROM node:22-alpine AS builder
 WORKDIR /app
 
 # Install deps first (cache layer) — separate copy so source changes
-# don't bust the install layer.
+# don't bust the install layer. `--legacy-peer-deps` is required
+# because Vite 6 and TanStack Start 1.168.x have a known peer dep
+# conflict that vanilla npm refuses to install around. (Same
+# workaround in dev: `npm install --legacy-peer-deps`.)
 COPY package.json package-lock.json* ./
-RUN npm ci
+RUN npm ci --legacy-peer-deps
 
 # Now the source.
 COPY . .
@@ -33,7 +36,7 @@ WORKDIR /app
 
 # Production-only deps — no devDependencies, no Vite, no TypeScript.
 COPY package.json package-lock.json* ./
-RUN npm ci --omit=dev
+RUN npm ci --omit=dev --legacy-peer-deps
 
 # Copy the build artifact AND the Node entry script.
 COPY --from=builder /app/dist ./dist

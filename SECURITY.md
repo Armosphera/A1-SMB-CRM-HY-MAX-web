@@ -48,6 +48,16 @@ in the backend (see the backend's `docs/integrations-admin-ui.md`).
 The admin-bootstrap envelope's `vaultAudit` section surfaces any
 plaintext-backed secrets so the operator can re-save them.
 
+## Build / install flags
+
+`npm install` and `npm ci` (both for the runtime image's
+`--omit=dev` and the builder image's full install) require
+`--legacy-peer-deps` because Vite 6 and TanStack Start 1.168.x
+have a known peer dep conflict. The repo ships an `.npmrc` with
+`legacy-peer-deps=true` so the flag is implicit. CI workflows
+(when the file is checked in) should NOT need to set the flag
+explicitly; a vanilla `npm ci` will read the `.npmrc`.
+
 ## CSP
 
 The app sets no inline scripts in production. TanStack Start's

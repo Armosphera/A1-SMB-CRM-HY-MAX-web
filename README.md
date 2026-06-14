@@ -15,7 +15,11 @@ First cut. The headline deliverable is **the Integrations settings page** that c
 ## Local dev
 
 ```sh
-npm install
+npm install --legacy-peer-deps
+# `--legacy-peer-deps` is required because Vite 6 and TanStack
+# Start 1.168.x have a known peer dep conflict that vanilla npm
+# refuses. (An `.npmrc` with `legacy-peer-deps=true` makes this
+# the default for any npm command in the repo.)
 # Set VITE_API_TARGET to your local Fastify dev server.
 # Default: http://localhost:4100
 VITE_API_TARGET=http://localhost:4100 npm run dev

@@ -12,10 +12,12 @@ import tsConfigPaths from "vite-tsconfig-paths";
 //           backend on the URL in `VITE_API_TARGET` (default
 //           http://localhost:4100). The browser sees one origin, so
 //           the auth Bearer token doesn't trip CORS.
-//   PROD  : A TanStack Start server route at `src/routes/v1/$.tsx`
-//           with `server.handlers.ANY` forwards the same paths to
-//           `BACKEND_URL` (set in the deploy env). Identical
-//           request/response shape to dev.
+//   PROD  : Node http middleware in `scripts/start.mjs`. The
+//           `wrappedFetch` intercepts /v1/* BEFORE TanStack Start
+//           and forwards to `BACKEND_URL` (set in the deploy env)
+//           using Node 22's built-in `fetch`. This is the prod
+//           analog of the Vite dev proxy and the path the Dockerfile
+//           + `npm start` actually run.
 //
 // The backend's `_admin-bootstrap` endpoint is at
 // /v1/integrations/_admin-bootstrap and is called by the
