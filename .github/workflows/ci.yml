@@ -13,6 +13,7 @@ concurrency:
 
 jobs:
   lint-typecheck-test:
+    if: false  # disabled 2026-06-21 — repo is private, local CI in ~/dev/armosphera/
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,6 +28,7 @@ jobs:
       - run: npm run typecheck
       - run: npm test
   build-image:
+    if: false  # disabled 2026-06-21 — repo is private, local CI in ~/dev/armosphera/
     runs-on: ubuntu-latest
     needs: lint-typecheck-test
     steps:
