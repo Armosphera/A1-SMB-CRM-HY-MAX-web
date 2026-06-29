@@ -19,15 +19,15 @@
     "docker:run": "docker run -d --name a1-smb-crm-hy-max-web -p 4173:4173 --restart unless-stopped a1-smb-crm-hy-max-web:latest"
   },
   "dependencies": {
-    "@inlang/paraglide-js": "^2.20.1",
-    "@tanstack/react-query": "^5.66.0",
+    "@inlang/paraglide-js": "^2.20.2",
+    "@tanstack/react-query": "^5.101.2",
     "@tanstack/react-router": "^1.170.16",
     "@tanstack/react-start": "^1.168.26",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.0",
     "lucide-react": "^0.577.0",
-    "motion": "^12.40.0",
+    "motion": "^12.42.0",
     "nuqs": "^2.8.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
